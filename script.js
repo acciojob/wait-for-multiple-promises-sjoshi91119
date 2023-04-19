@@ -1,46 +1,52 @@
-// //your JS code here. If required.
-// const promises = [
-//     new Promise(resolve => setTimeout(() => resolve("Promise 1"), Math.random() * 2000 + 1000)),
-//     new Promise(resolve => setTimeout(() => resolve("Promise 2"), Math.random() * 2000 + 1000)),
-//     new Promise(resolve => setTimeout(() => resolve("Promise 3"), Math.random() * 2000 + 1000))
-//   ];
+const res = document.getElementById("output");
 
-//   const startTime = performance.now();
-//   Promise.all(promises)
-//     .then(results => {
-//       const endTime = performance.now();
-//       const totalDuration = ((endTime - startTime) / 1000).toFixed(3);
+const promises = [
+  new Promise((resolve) => {
+    const time = Math.floor(Math.random() * 3 + 1) * 1000;
+    setTimeout(() => resolve({ name: "Promise 1", time: time / 1000 }), time);
+  }),
+  new Promise((resolve) => {
+    const time = Math.floor(Math.random() * 3 + 1) * 1000;
+    setTimeout(() => resolve({ name: "Promise 2", time: time / 1000 }), time);
+  }),
+  new Promise((resolve) => {
+    const time = Math.floor(Math.random() * 3 + 1) * 1000;
+    setTimeout(() => resolve({ name: "Promise 3", time: time / 1000 }), time);
+  }),
+];
 
-//       const loadingRow = document.getElementById("loading-row");
-//       loadingRow.parentNode.removeChild(loadingRow);
+async function callFnc() {
+  const start = new Date();
+  // Use Promise.all to wait for all Promises to resolve
+  res.innerHTML += `
+            <tr id="loading">
+                <td colspan=2>Loading...</td>
+            </tr>
+          `;
+  await Promise.all(promises)
+    .then((results) => {
+      res.innerHTML = ``;
+      // Log the array of results
+      results.forEach((e) => {
+        res.innerHTML += `
+            <tr>
+                <td>${e.name}</td>
+                <td>${e.time}</td>
+            </tr>
+          `;
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 
-//       const tableBody = document.querySelector("table tbody");
-//       results.forEach((result, index) => {
-//         const duration = ((performance.now() - startTime) / 1000).toFixed(3);
-//         const row = tableBody.insertRow(index);
-//         row.insertCell(0).textContent = result;
-//         row.insertCell(1).textContent = duration;
-//       });
-
-//       const totalRow = tableBody.insertRow();
-//       totalRow.insertCell(0).textContent = "Total";
-//       totalRow.insertCell(1).textContent = totalDuration;
-//     });
-
-const express = require('express');
-const path = require('path');
-
-const app = express();
-
-app.use(express.static(__dirname))
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname + '/main.html'));
-});
-//your code here
-app.post('/add', (req, res) => {
-  const {a,b} = req.body;
-  res.status(200).send(a+b);
-  // res.sendFile(path.join(__dirname + '/main.html'));
-});
-module.exports = app;
+  const end = new Date();
+  const timeInMillis = end - start;
+  res.innerHTML += `
+            <tr>
+                <td>Total</td>
+                <td>${timeInMillis / 1000}</td>
+            </tr>
+          `;
+}
+callFnc();
